@@ -1,0 +1,142 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - '[0-9]*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '0.0.1'
+        required: true
+        default: '0.0.1'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/}"
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Building version: $VERSION"
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install meson ninja-build libdrm-dev libpciaccess-dev libkmod-dev \
+            libproc2-dev libunwind-dev libdw-dev libcairo2-dev libudev-dev libxrandr-dev \
+            python3-docutils jq wget
+
+      - name: Get latest igt-gpu-tools version
+        id: igt-version
+        run: |
+          REPO_V=$(wget -qO- "https://gitlab.freedesktop.org/api/v4/projects/1274/repository/tags?per_page=100" | \
+            jq -r '[.[] | select(.name | test("-(rc|beta|alpha)"; "i") | not)] | .[0].name')
+          echo "IGT_VERSION=$REPO_V" >> $GITHUB_OUTPUT
+          echo "Using igt-gpu-tools version: $REPO_V"
+
+      - name: Clone and build igt-gpu-tools
+        run: |
+          git clone https://gitlab.freedesktop.org/drm/igt-gpu-tools.git
+          cd igt-gpu-tools
+          git checkout ${{ steps.igt-version.outputs.IGT_VERSION }}
+
+          meson --prefix=/usr build
+          ninja -C build tools/intel_gpu_top
+
+      - name: Download Intel icon
+        run: wget -O icon.png "https://raw.githubusercontent.com/ich777/docker-templates/master/ich777/images/intel.png"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build Vue plugin
+        working-directory: page
+        env:
+          PLUGIN_VERSION: ${{ steps.version.outputs.VERSION }}
+        run: npm install && npm run build
+
+      - name: Create package structure
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          PKG_NAME="intel_gpu_top-${VERSION}-1+mos-plugin"
+          PKG_DIR="${PKG_NAME}_amd64"
+
+          # Create directory structure
+          mkdir -p ${PKG_DIR}/usr/bin
+          mkdir -p ${PKG_DIR}/usr/bin/plugins
+          mkdir -p ${PKG_DIR}/var/www/mos-plugins/intel-gpu-top
+          mkdir -p ${PKG_DIR}/DEBIAN
+
+          # Copy intel_gpu_top binary
+          cp igt-gpu-tools/build/tools/intel_gpu_top ${PKG_DIR}/usr/bin/
+          chmod +x ${PKG_DIR}/usr/bin/intel_gpu_top
+
+          # Create symlink
+          ln -s /usr/bin/intel_gpu_top ${PKG_DIR}/usr/bin/plugins/intel_gpu_top
+
+          # Copy Vue plugin
+          cp -R page/dist/intel-gpu-top/* ${PKG_DIR}/var/www/mos-plugins/intel-gpu-top/
+
+          # Copy icon
+          cp icon.png ${PKG_DIR}/var/www/mos-plugins/intel-gpu-top/
+
+          # Copy default settings.json
+          cp settings.json ${PKG_DIR}/var/www/mos-plugins/intel-gpu-top/
+
+          # Create DEBIAN control file
+          cat > ${PKG_DIR}/DEBIAN/control << EOF
+          Package: intel-gpu-top
+          Version: ${VERSION}-1+mos-plugin
+          Architecture: amd64
+          Maintainer: admin@minenet.at
+          Description: Intel GPU Top Plugin for MOS
+          EOF
+
+          # Create postinst script
+          cat > ${PKG_DIR}/DEBIAN/postinst << 'EOF'
+          #!/bin/bash
+          chmod +x /usr/bin/intel_gpu_top
+          exit 0
+          EOF
+          chmod +x ${PKG_DIR}/DEBIAN/postinst
+
+      - name: Build .deb package
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          PKG_NAME="intel_gpu_top-${VERSION}-1+mos-plugin"
+          PKG_DIR="${PKG_NAME}_amd64"
+          DEB_FILE="${PKG_NAME}_amd64.deb"
+
+          dpkg-deb --build ${PKG_DIR}
+
+          # Generate MD5
+          md5sum ${DEB_FILE} | awk '{print $1}' > ${DEB_FILE}.md5
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.VERSION }}
+          name: Intel GPU Top ${{ steps.version.outputs.VERSION }}
+          body: |
+            ## Intel GPU Top Plugin ${{ steps.version.outputs.VERSION }}
+
+          files: |
+            intel_gpu_top-${{ steps.version.outputs.VERSION }}-1+mos-plugin_amd64.deb
+            intel_gpu_top-${{ steps.version.outputs.VERSION }}-1+mos-plugin_amd64.deb.md5
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+install() {
+  echo "install"
+}
+
+uninstall() {
+  echo "uninstall"
+}
+
+mos-start() {
+  echo "mos-start"
+}
+
+plugin-update() {
+  echo "plugin update"
+}
+
+mos-osupdate() {
+  echo "os update"
+}
