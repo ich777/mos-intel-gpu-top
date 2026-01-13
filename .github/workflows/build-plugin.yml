@@ -93,9 +93,6 @@ jobs:
           # Copy icon
           cp icon.png ${PKG_DIR}/var/www/mos-plugins/intel-gpu-top/
 
-          # Copy default settings.json
-          cp settings.json ${PKG_DIR}/var/www/mos-plugins/intel-gpu-top/
-
           # Create DEBIAN control file
           cat > ${PKG_DIR}/DEBIAN/control << EOF
           Package: intel-gpu-top
