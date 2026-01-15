@@ -12,6 +12,11 @@ functions, configuration files (such as `settings.json`), and a packaged
 `intel-gpu-top` binary required to expose Intel GPU monitoring functionality
 within MOS.
 
+
+### Binary Source
+
+- igt-gpu-tools: [https://gitlab.freedesktop.org/drm/igt-gpu-tools](https://gitlab.freedesktop.org/drm/igt-gpu-tools)
+
 The plugin allows MOS to provide GPU usage and performance information on
 systems with supported Intel GPUs.
 
