@@ -77,6 +77,7 @@ jobs:
           # Create directory structure
           mkdir -p ${PKG_DIR}/usr/bin
           mkdir -p ${PKG_DIR}/usr/bin/plugins
+          mkdir -p ${PKG_DIR}/usr/share/doc/igt-gpu-tools
           mkdir -p ${PKG_DIR}/var/www/mos-plugins/intel-gpu-top
           mkdir -p ${PKG_DIR}/DEBIAN
 
@@ -86,6 +87,9 @@ jobs:
 
           # Create symlink
           ln -s /usr/bin/intel_gpu_top ${PKG_DIR}/usr/bin/plugins/intel_gpu_top
+
+          # Copy COPYING
+          cp igt-gpu-tools/COPYING ${PKG_DIR}/usr/share/doc/igt-gpu-tools/COPYING
 
           # Copy Vue plugin
           cp -R page/dist/intel-gpu-top/* ${PKG_DIR}/var/www/mos-plugins/intel-gpu-top/
