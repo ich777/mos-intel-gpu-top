@@ -1,6 +1,6 @@
 # MOS intel-gpu-top
 
-mos-intel-gpu-top provides a **MOS plugin** that integrates the `intel-gpu-top`
+mos-intel-gpu-top provides a **MOS plugin** that integrates the `intel_gpu_top`
 utility into the MOS ecosystem.
 
 ---
@@ -9,7 +9,7 @@ utility into the MOS ecosystem.
 
 This repository contains the **MOS plugin implementation**, optional helper
 functions, configuration files (such as `settings.json`), and a packaged
-`intel-gpu-top` binary required to expose Intel GPU monitoring functionality
+`intel_gpu_top` binary required to expose Intel GPU monitoring functionality
 within MOS.
 
 
@@ -37,7 +37,7 @@ installed through the MOS Hub.
 The contents of this repository (plugin code, build scripts, configuration,
 and automation) are licensed under **GPL-3.0**.
 
-`intel-gpu-top` itself is licensed under its respective upstream license.
+`intel_gpu_top` itself is licensed under its respective upstream license.
 
 ---
 
