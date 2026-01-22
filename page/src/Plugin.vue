@@ -245,6 +245,7 @@ const checkSriovDriver = async () => {
       const data = await res.json();
       if (data.results && Array.isArray(data.results)) {
         hasSriovDriver.value = data.results.some((plugin) => plugin.name === 'sriov-driver');
+        console.log('SR-IOV driver check:', hasSriovDriver.value, 'Plugins:', data.results.map(p => p.name));
       }
     }
   } catch (e) {
@@ -257,6 +258,8 @@ const fetchGpuData = async (gpu) => {
     const args = hasSriovDriver.value
       ? ['-J', '-n', '1', '-d', 'sriov']
       : ['-J', '-n', '1', `sys:/sys/devices/pci0000:00/0000:${gpu.pci}`];
+
+    console.log('Fetching GPU data with args:', args, 'SR-IOV driver present:', hasSriovDriver.value);
 
     const res = await fetch('/api/v1/mos/plugins/query', {
       method: 'POST',
@@ -350,7 +353,13 @@ const saveSettings = async () => {
 
 onMounted(async () => {
   try {
-    await Promise.all([fetchSettings(), fetchAvailableGpus(), checkSriovDriver()]);
+    // Zuerst SR-IOV Driver Check - MUSS vor allem anderen abgeschlossen sein
+    await checkSriovDriver();
+    
+    // Dann Settings und GPUs laden
+    await Promise.all([fetchSettings(), fetchAvailableGpus()]);
+    
+    // Erst jetzt mit Polling starten
     if (isConfigured.value) {
       startPolling();
     }
