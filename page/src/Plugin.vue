@@ -164,6 +164,7 @@ const loading = ref(true);
 const settings = ref({ gpus: [], interval: 2 });
 const gpuData = ref({});
 const availableGpus = ref([]);
+const hasSriovDriver = ref(false);
 let pollInterval = null;
 
 const settingsDialog = reactive({
@@ -235,8 +236,28 @@ const fetchAvailableGpus = async () => {
   }
 };
 
+const checkSriovDriver = async () => {
+  try {
+    const res = await fetch('/api/v1/mos/plugins', {
+      headers: getAuthHeaders(),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.results && Array.isArray(data.results)) {
+        hasSriovDriver.value = data.results.some((plugin) => plugin.name === 'sriov-driver');
+      }
+    }
+  } catch (e) {
+    console.error('Failed to check for sriov-driver plugin:', e);
+  }
+};
+
 const fetchGpuData = async (gpu) => {
   try {
+    const args = hasSriovDriver.value
+      ? ['-J', '-n', '1', '-d', 'sriov']
+      : ['-J', '-n', '1', `sys:/sys/devices/pci0000:00/0000:${gpu.pci}`];
+
     const res = await fetch('/api/v1/mos/plugins/query', {
       method: 'POST',
       headers: {
@@ -245,7 +266,7 @@ const fetchGpuData = async (gpu) => {
       },
       body: JSON.stringify({
         command: 'intel_gpu_top',
-        args: ['-J', '-n', '1', `sys:/sys/devices/pci0000:00/0000:${gpu.pci}`],
+        args: args,
         timeout: 2,
         parse_json: true,
       }),
@@ -329,7 +350,7 @@ const saveSettings = async () => {
 
 onMounted(async () => {
   try {
-    await Promise.all([fetchSettings(), fetchAvailableGpus()]);
+    await Promise.all([fetchSettings(), fetchAvailableGpus(), checkSriovDriver()]);
     if (isConfigured.value) {
       startPolling();
     }
