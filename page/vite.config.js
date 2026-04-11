@@ -50,7 +50,7 @@ export default defineConfig({
         './Widget': './src/Widget.vue',
         './Locales': './src/locales/index.js',
       },
-      shared: ['vue'],
+      shared: ['vue', 'vue-i18n'],
     }),
     generateManifest(),
   ],
