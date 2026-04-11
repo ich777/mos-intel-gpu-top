@@ -5,10 +5,10 @@
     </div>
     <div v-else-if="!isConfigured" class="text-center pa-3">
       <v-icon size="32" color="grey" class="mb-2">mdi-cog-outline</v-icon>
-      <div class="text-body-2 text-medium-emphasis mb-2">{{ t('plugin_intel_gpu_top.not_configured') }}</div>
+      <div class="text-body-2 text-medium-emphasis mb-2">{{ $t('plugin_intel_gpu_top.not_configured') }}</div>
       <v-btn size="small" variant="tonal" color="primary" :to="`/plugins/intel-gpu-top`">
         <v-icon start size="16">mdi-open-in-app</v-icon>
-        {{ t('plugin_intel_gpu_top.configure') }}
+        {{ $t('plugin_intel_gpu_top.configure') }}
       </v-btn>
     </div>
     <div v-else>
@@ -19,11 +19,11 @@
         </div>
         <div v-if="gpuData[gpu.pci]">
           <div v-if="gpuData[gpu.pci].frequency?.actual != null" class="d-flex align-center mb-1" style="gap: 6px">
-            <span class="text-caption" style="width: 80px; flex-shrink: 0"><b>{{ t('plugin_intel_gpu_top.frequency') }}</b></span>
+            <span class="text-caption" style="width: 80px; flex-shrink: 0"><b>{{ $t('plugin_intel_gpu_top.frequency') }}</b></span>
             <span class="text-caption" style="flex-shrink: 0">{{ Math.round(gpuData[gpu.pci].frequency.actual) }} MHz</span>
           </div>
           <div v-if="gpuData[gpu.pci].power?.['GPU']?.power != null" class="d-flex align-center mb-1" style="gap: 6px">
-            <span class="text-caption" style="width: 80px; flex-shrink: 0"><b>{{ t('plugin_intel_gpu_top.power') }}</b></span>
+            <span class="text-caption" style="width: 80px; flex-shrink: 0"><b>{{ $t('plugin_intel_gpu_top.power') }}</b></span>
             <span class="text-caption" style="flex-shrink: 0">{{ gpuData[gpu.pci].power['GPU'].power.toFixed(1) }} W</span>
           </div>
           <div v-if="gpuData[gpu.pci].rc6?.value != null" class="d-flex align-center mb-1" style="gap: 6px">
@@ -58,11 +58,11 @@
           </template>
           <div v-if="getClientCount(gpu.pci) > 0" class="text-caption text-medium-emphasis mt-1">
             <v-icon size="12">mdi-application-outline</v-icon>
-            {{ getClientCount(gpu.pci) }} {{ getClientCount(gpu.pci) === 1 ? t('plugin_intel_gpu_top.process') : t('plugin_intel_gpu_top.processes') }}
+            {{ getClientCount(gpu.pci) }} {{ getClientCount(gpu.pci) === 1 ? $t('plugin_intel_gpu_top.process') : $t('plugin_intel_gpu_top.processes') }}
           </div>
         </div>
         <div v-else class="text-caption text-medium-emphasis text-center pa-2">
-          {{ t('plugin_intel_gpu_top.loading') }}
+          {{ $t('plugin_intel_gpu_top.loading') }}
         </div>
         <v-divider v-if="index < settings.gpus.length - 1" class="mt-2" />
       </div>
@@ -72,9 +72,6 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useI18n } from 'vue-i18n';
-
-const { t } = useI18n();
 
 const loading = ref(true);
 const settings = ref({ gpus: [], interval: 2 });
