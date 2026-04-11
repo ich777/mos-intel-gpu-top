@@ -1,6 +1,7 @@
 {
   "plugin_intel_gpu_top": {
     "title": "Intel GPU Top",
+    "description": "Monitor Intel GPU usage and performance metrics",
     "not_configured": "Plugin not configured",
     "not_configured_hint": "Please configure the plugin first to display GPU data.",
     "configure": "Configure",

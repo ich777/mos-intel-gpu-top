@@ -1,6 +1,7 @@
 {
   "plugin_intel_gpu_top": {
     "title": "Intel GPU Top",
+    "description": "Intel GPU-Auslastung und Leistungsdaten überwachen",
     "not_configured": "Plugin nicht konfiguriert",
     "not_configured_hint": "Bitte konfigurieren Sie zuerst das Plugin, um GPU-Daten anzuzeigen.",
     "configure": "Konfigurieren",
