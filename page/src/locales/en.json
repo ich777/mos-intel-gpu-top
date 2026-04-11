@@ -2,12 +2,26 @@
   "plugin_intel_gpu_top": {
     "title": "Intel GPU Top",
     "not_configured": "Plugin not configured",
+    "not_configured_hint": "Please configure the plugin first to display GPU data.",
     "configure": "Configure",
     "frequency": "Frequency",
+    "frequency_requested": "Frequency Requested",
+    "frequency_actual": "Frequency Actual",
+    "interrupts": "Interrupts",
     "power": "Power",
+    "power_gpu": "Power GPU",
+    "power_package": "Power Package",
+    "imc_reads": "IMC Reads",
+    "imc_writes": "IMC Writes",
     "engines": "Engines",
+    "clients": "Clients",
     "process": "process",
     "processes": "processes",
-    "loading": "Loading data..."
+    "loading": "Loading data...",
+    "settings": "Settings",
+    "update_interval": "Update interval (seconds)",
+    "gpus": "GPUs",
+    "cancel": "Cancel",
+    "save": "Save"
   }
 }

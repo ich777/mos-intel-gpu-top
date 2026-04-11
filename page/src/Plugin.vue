@@ -1,10 +1,10 @@
 <template>
   <div>
-    <h2 class="mb-4">Intel-GPU-TOP Plugin</h2>
+    <h2 class="mb-4">{{ $t('plugin_intel_gpu_top.title') }}</h2>
     <v-skeleton-loader v-if="loading" :loading="true" type="card" />
     <v-card v-else-if="!isConfigured" class="mb-4 pa-0">
       <v-card-text class="pa-4">
-        Please configure the plugin first to display GPU data.
+        {{ $t('plugin_intel_gpu_top.not_configured_hint') }}
       </v-card-text>
     </v-card>
     <div v-else style="margin-bottom: 80px">
@@ -17,31 +17,31 @@
         <v-card-text v-if="gpuData[gpu.pci]" class="pa-4">
           <v-row dense>
             <v-col v-if="gpuData[gpu.pci].frequency?.requested !== undefined" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>Frequency Requested</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_intel_gpu_top.frequency_requested') }}</strong></div>
               <div class="text-body-2">{{ Math.round(gpuData[gpu.pci].frequency.requested) }} MHz</div>
             </v-col>
             <v-col v-if="gpuData[gpu.pci].frequency?.actual !== undefined" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>Frequency Actual</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_intel_gpu_top.frequency_actual') }}</strong></div>
               <div class="text-body-2">{{ Math.round(gpuData[gpu.pci].frequency.actual) }} MHz</div>
             </v-col>
             <v-col v-if="gpuData[gpu.pci].interrupts" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>Interrupts</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_intel_gpu_top.interrupts') }}</strong></div>
               <div class="text-body-2">{{ Math.round(gpuData[gpu.pci].interrupts.count) }}/s</div>
             </v-col>
             <v-col v-if="gpuData[gpu.pci].power?.['GPU']" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>Power GPU</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_intel_gpu_top.power_gpu') }}</strong></div>
               <div class="text-body-2">{{ (gpuData[gpu.pci].power['GPU'].power || 0).toFixed(2) }} W</div>
             </v-col>
             <v-col v-if="gpuData[gpu.pci].power?.['Package']" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>Power Package</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_intel_gpu_top.power_package') }}</strong></div>
               <div class="text-body-2">{{ (gpuData[gpu.pci].power['Package'].power || 0).toFixed(2) }} W</div>
             </v-col>
             <v-col v-if="gpuData[gpu.pci]['imc-bandwidth']?.reads !== undefined" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>IMC Reads</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_intel_gpu_top.imc_reads') }}</strong></div>
               <div class="text-body-2">{{ Math.round(gpuData[gpu.pci]['imc-bandwidth'].reads) }} MiB/s</div>
             </v-col>
             <v-col v-if="gpuData[gpu.pci]['imc-bandwidth']?.writes !== undefined" cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>IMC Writes</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_intel_gpu_top.imc_writes') }}</strong></div>
               <div class="text-body-2">{{ Math.round(gpuData[gpu.pci]['imc-bandwidth'].writes) }} MiB/s</div>
             </v-col>
           </v-row>
@@ -65,7 +65,7 @@
           </v-row>
           <v-row v-if="gpuData[gpu.pci].engines" dense class="mt-2">
             <v-col cols="12">
-              <div class="text-caption text-medium-emphasis mb-1"><strong>Engines</strong></div>
+              <div class="text-caption text-medium-emphasis mb-1"><strong>{{ $t('plugin_intel_gpu_top.engines') }}</strong></div>
               <v-row v-for="(engine, engineName) in gpuData[gpu.pci].engines" :key="engineName" dense>
                 <v-col>
                   <div style="min-width: 0; display: flex; align-items: center; gap: 6px">
@@ -90,7 +90,7 @@
           <v-row v-if="gpuData[gpu.pci].clients && Object.keys(gpuData[gpu.pci].clients).length > 0" dense class="mt-2">
             <v-col cols="12">
               <details>
-                <summary style="cursor: pointer; color: var(--v-theme-primary); text-decoration: underline" class="text-body-2 mb-1">Clients</summary>
+                <summary style="cursor: pointer; color: var(--v-theme-primary); text-decoration: underline" class="text-body-2 mb-1">{{ $t('plugin_intel_gpu_top.clients') }}</summary>
                 <div v-for="(client, clientId) in gpuData[gpu.pci].clients" :key="clientId" class="mb-3">
                   <div class="d-flex align-center mb-1">
                     <span class="text-body-2"><b>{{ client.name || 'Unknown' }}</b></span>
@@ -116,18 +116,18 @@
           </v-row>
         </v-card-text>
         <v-card-text v-else class="text-center pa-8 text-grey">
-          Loading data...
+          {{ $t('plugin_intel_gpu_top.loading') }}
         </v-card-text>
       </v-card>
     </div>
     <v-dialog v-model="settingsDialog.value" max-width="600">
       <v-card class="pa-0">
-        <v-card-title>Settings</v-card-title>
+        <v-card-title>{{ $t('plugin_intel_gpu_top.settings') }}</v-card-title>
         <v-card-text>
           <v-form>
             <v-text-field
               v-model.number="settingsDialog.interval"
-              label="Update interval (seconds)"
+              :label="$t('plugin_intel_gpu_top.update_interval')"
               type="number"
               min="1"
               @blur="validateInterval"
@@ -137,7 +137,7 @@
               :items="availableGpusItems"
               item-title="title"
               item-value="value"
-              label="GPUs"
+              :label="$t('plugin_intel_gpu_top.gpus')"
               multiple
               chips
               clearable
@@ -146,8 +146,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="onPrimary" @click="settingsDialog.value = false">Cancel</v-btn>
-          <v-btn color="onPrimary" @click="saveSettings" :loading="settingsDialog.saving">Save</v-btn>
+          <v-btn color="onPrimary" @click="settingsDialog.value = false">{{ $t('plugin_intel_gpu_top.cancel') }}</v-btn>
+          <v-btn color="onPrimary" @click="saveSettings" :loading="settingsDialog.saving">{{ $t('plugin_intel_gpu_top.save') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
