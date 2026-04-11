@@ -21,6 +21,7 @@ const generateManifest = () => ({
       icon: pluginConfig.icon || '',
       author: pluginConfig.author || '',
       homepage: pluginConfig.homepage || '',
+      widget: pluginConfig.widget || false,
     };
 
     try {
@@ -46,6 +47,8 @@ export default defineConfig({
       filename: 'remoteEntry.js',
       exposes: {
         './Plugin': './src/Plugin.vue',
+        './Widget': './src/Widget.vue',
+        './Locales': './src/locales/index.js',
       },
       shared: ['vue'],
     }),

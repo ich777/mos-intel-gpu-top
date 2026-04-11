@@ -6,4 +6,5 @@ export default {
   icon: '',
   author: 'ich777',
   homepage: 'https://gitlab.freedesktop.org/drm/igt-gpu-tools',
+  widget: true,
 };

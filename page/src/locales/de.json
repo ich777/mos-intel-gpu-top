@@ -1,0 +1,13 @@
+{
+  "plugin_intel_gpu_top": {
+    "title": "Intel GPU Top",
+    "not_configured": "Plugin nicht konfiguriert",
+    "configure": "Konfigurieren",
+    "frequency": "Frequenz",
+    "power": "Leistung",
+    "engines": "Engines",
+    "process": "Prozess",
+    "processes": "Prozesse",
+    "loading": "Daten werden geladen..."
+  }
+}
