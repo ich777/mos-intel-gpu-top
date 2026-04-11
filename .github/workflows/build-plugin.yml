@@ -35,7 +35,7 @@ jobs:
           sudo apt-get update
           sudo apt-get -y install meson ninja-build libdrm-dev libpciaccess-dev libkmod-dev \
             libproc2-dev libunwind-dev libdw-dev libcairo2-dev libudev-dev libxrandr-dev \
-            python3-docutils jq wget
+            libpci-dev python3-docutils jq wget
 
       - name: Get latest igt-gpu-tools version
         id: igt-version
