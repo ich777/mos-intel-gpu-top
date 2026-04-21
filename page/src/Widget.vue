@@ -56,9 +56,24 @@
               </div>
             </template>
           </template>
-          <div v-if="getClientCount(gpu.pci) > 0" class="text-caption text-medium-emphasis mt-1">
-            <v-icon size="12">mdi-application-outline</v-icon>
-            {{ getClientCount(gpu.pci) }} {{ getClientCount(gpu.pci) === 1 ? $t('plugin_intel_gpu_top.process') : $t('plugin_intel_gpu_top.processes') }}
+          <div v-if="getClientCount(gpu.pci) > 0" class="mt-1">
+            <details>
+              <summary style="cursor: pointer; color: var(--v-theme-primary); text-decoration: underline" class="text-body-2 mb-1">
+                <v-icon size="12" class="mr-1">mdi-application-outline</v-icon>
+                {{ getClientCount(gpu.pci) }} {{ getClientCount(gpu.pci) === 1 ? $t('plugin_intel_gpu_top.process') : $t('plugin_intel_gpu_top.processes') }}
+              </summary>
+              <div v-for="(client, clientId) in gpuData[gpu.pci].clients" :key="clientId" class="mb-2 ml-1">
+                <div class="d-flex align-center mb-1">
+                  <span class="text-caption"><b>{{ client.name || 'Unknown' }}</b></span>
+                  <span class="text-caption text-medium-emphasis ml-2">PID: {{ client.pid || clientId }}</span>
+                </div>
+                <div v-if="client['engine-classes']" class="d-flex flex-wrap" style="gap: 4px 12px">
+                  <span v-for="(eng, engName) in client['engine-classes']" :key="engName" class="text-caption">
+                    {{ engName }}: {{ parseFloat(eng.busy || 0).toFixed(1) }}%
+                  </span>
+                </div>
+              </div>
+            </details>
           </div>
         </div>
         <div v-else class="text-caption text-medium-emphasis text-center pa-2">
