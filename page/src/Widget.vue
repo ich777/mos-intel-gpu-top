@@ -72,15 +72,18 @@
                   <span class="text-caption text-medium-emphasis ml-2">PID: {{ client.pid || clientId }}</span>
                 </div>
                 <div v-if="client['engine-classes']">
-                  <div v-for="(eng, engName) in client['engine-classes']" :key="engName" style="display: flex; align-items: center; gap: 4px" class="mb-1">
-                    <span class="text-caption" style="width: 55px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis" :title="engName">{{ engName }}</span>
+                  <div v-for="(eng, engName) in client['engine-classes']" :key="engName" class="d-flex align-center mb-1" style="gap: 6px">
+                    <span class="text-caption" style="width: 80px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis" :title="engName"><small>{{ engName }}</small></span>
                     <v-progress-linear
                       :model-value="parseFloat(eng.busy) || 0"
-                      height="8"
+                      height="10"
                       :color="parseFloat(eng.busy) >= 90 ? 'red' : parseFloat(eng.busy) >= 75 ? 'orange' : 'green'"
-                      style="border-radius: 4px; overflow: hidden; flex: 1"
-                    />
-                    <span class="text-caption" style="width: 35px; text-align: right; flex-shrink: 0">{{ parseFloat(eng.busy || 0).toFixed(1) }}%</span>
+                      style="border-radius: 5px; overflow: hidden; flex: 1"
+                    >
+                      <template #default>
+                        <span style="font-size: 9px">{{ parseFloat(eng.busy || 0).toFixed(1) }}%</span>
+                      </template>
+                    </v-progress-linear>
                   </div>
                 </div>
               </div>
