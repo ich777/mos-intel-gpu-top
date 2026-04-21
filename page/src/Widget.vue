@@ -56,8 +56,12 @@
               </div>
             </template>
           </template>
-          <div v-if="getClientCount(gpu.pci) > 0" class="mt-1">
-            <details>
+          <div class="mt-1">
+            <div v-if="getClientCount(gpu.pci) === 0" class="text-caption text-medium-emphasis">
+              <v-icon size="12" class="mr-1">mdi-application-outline</v-icon>
+              0 {{ $t('plugin_intel_gpu_top.processes') }}
+            </div>
+            <details v-else>
               <summary style="cursor: pointer; color: var(--v-theme-primary); text-decoration: underline" class="text-body-2 mb-1">
                 <v-icon size="12" class="mr-1">mdi-application-outline</v-icon>
                 {{ getClientCount(gpu.pci) }} {{ getClientCount(gpu.pci) === 1 ? $t('plugin_intel_gpu_top.process') : $t('plugin_intel_gpu_top.processes') }}
@@ -67,10 +71,17 @@
                   <span class="text-caption"><b>{{ client.name || 'Unknown' }}</b></span>
                   <span class="text-caption text-medium-emphasis ml-2">PID: {{ client.pid || clientId }}</span>
                 </div>
-                <div v-if="client['engine-classes']" class="d-flex flex-wrap" style="gap: 4px 12px">
-                  <span v-for="(eng, engName) in client['engine-classes']" :key="engName" class="text-caption">
-                    {{ engName }}: {{ parseFloat(eng.busy || 0).toFixed(1) }}%
-                  </span>
+                <div v-if="client['engine-classes']">
+                  <div v-for="(eng, engName) in client['engine-classes']" :key="engName" style="display: flex; align-items: center; gap: 4px" class="mb-1">
+                    <span class="text-caption" style="width: 55px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis" :title="engName">{{ engName }}</span>
+                    <v-progress-linear
+                      :model-value="parseFloat(eng.busy) || 0"
+                      height="8"
+                      :color="parseFloat(eng.busy) >= 90 ? 'red' : parseFloat(eng.busy) >= 75 ? 'orange' : 'green'"
+                      style="border-radius: 4px; overflow: hidden; flex: 1"
+                    />
+                    <span class="text-caption" style="width: 35px; text-align: right; flex-shrink: 0">{{ parseFloat(eng.busy || 0).toFixed(1) }}%</span>
+                  </div>
                 </div>
               </div>
             </details>
